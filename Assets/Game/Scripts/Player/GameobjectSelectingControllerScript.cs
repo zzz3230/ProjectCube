@@ -11,12 +11,23 @@ public class GameobjectSelectingControllerScript : MonoBehaviour
     [SerializeField] PlatformEditorWidgetScript _platformEditorWidget;
     [SerializeField] LineRenderer _connectingLineRenderer;
     [SerializeField] SignalLineScript _signalLineOriginal;
+    [SerializeField] LevelBuilderScript _levelBuilder;
 
     BasePlatformScript _selectedPlatform;
 
 
     void Update()
     {
+        if (!LevelScript.instance.canEditLevel)
+            return;
+
+        if(_selectedPlatform && Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.D))
+        {
+            var newParams = Input.GetKey(KeyCode.RightShift) ? _selectedPlatform.platformParams : _selectedPlatform.platformParams.Dublicate();
+            _levelBuilder.BuildInCenter(_selectedPlatform.prefab.buildingID, newParams);
+        }
+            
+
         if (Input.GetMouseButtonDown(0))
         {
             //Debug.Log("Pressed left click, casting ray.");Script
@@ -57,6 +68,14 @@ public class GameobjectSelectingControllerScript : MonoBehaviour
     }
 
     #region connecting
+    public bool ConnectObjects(GameObject transmitter, GameObject receiver)
+    {
+        if (TryBeginConnecting(transmitter))
+            if (TryEndConnecting(receiver))
+                return true;
+        return false;
+    }
+
 
     SignalTransmitterScript _connectingTransmitter;
     SignalReceiverScript _connectingReceiver;
@@ -94,6 +113,29 @@ public class GameobjectSelectingControllerScript : MonoBehaviour
         _connecting = false;
     }
 
+    bool TryEndConnecting(GameObject obj)
+    {
+        SignalReceiverScript rec = null;
+        if (obj.TryGetComponent<SignalReceiverScript>(out var r))
+        {
+            rec = r;
+        }
+        else
+        {
+            rec = obj.GetComponentInParent<SignalReceiverScript>();
+        }
+        _connectingReceiver = rec;
+
+
+
+        if (_connectingReceiver && _connectingTransmitter)
+        {
+            Connect(_connectingTransmitter, _connectingReceiver);
+            return true;
+        }
+        return false;
+    }
+
     void CastEndConnectRay()
     {
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -102,26 +144,29 @@ public class GameobjectSelectingControllerScript : MonoBehaviour
 
         if (res.collider)
         {
-            SignalReceiverScript rec = null;
-            if (res.collider.TryGetComponent<SignalReceiverScript>(out var r))
-            {
-                rec = r;
-            }
-            else
-            {
-                rec = res.collider.GetComponentInParent<SignalReceiverScript>();
-            }
-            _connectingReceiver = rec;
-
-
-
-            if (_connectingReceiver && _connectingTransmitter)
-            {
-                Connect(_connectingTransmitter, _connectingReceiver);
-            }
+            TryEndConnecting(res.collider.gameObject);
         }
     }
 
+    bool TryBeginConnecting(GameObject obj)
+    {
+        if(obj.TryGetComponent<SignalTransmitterScript>(out var mtr))
+        {
+            _connectingTransmitter = mtr;
+            return true;
+        }
+
+        var tr = obj.GetComponentInParent<SignalTransmitterScript>();
+        if (tr)
+        {
+            _connectingTransmitter = tr;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     void CastBeginConnectRay()
     {
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
@@ -130,17 +175,8 @@ public class GameobjectSelectingControllerScript : MonoBehaviour
 
         if (res.collider)
         {
-            var tr = res.collider.GetComponentInParent<SignalTransmitterScript>();
-            if (tr)
-            {
-                _connectingTransmitter = tr;
+            if(TryBeginConnecting(res.collider.gameObject))
                 BeginConnecting();
-            }
-            else
-            {
-                
-            }
-            
             //print((tr));
         }
         else
@@ -173,8 +209,8 @@ public class GameobjectSelectingControllerScript : MonoBehaviour
                     _movingOffset = _selectedPlatform.platformParams.position.ToVec3(0) - mouseInWorldPos;
                     _moving = true;
                 }
-                    
 
+                //
                 _selectedPlatform.platformParams.position = (mouseInWorldPos + _movingOffset).Round(0.5f);
                 _selectedPlatform.ApplyParams();
             }

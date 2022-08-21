@@ -15,6 +15,8 @@ public class PlatformEditorWidgetScript : MonoBehaviour
     [SerializeField] Vector2FieldParamEditorScript _vector2FieldParamWidgetOriginal;
     [SerializeField] AngleFieldParamEditorScript _angleFieldParamEditorOriginal;
     [SerializeField] PlatformToolsParamEditorWidgetScript _platformToolsParamWidgetOriginal;
+    [SerializeField] TriggerArgsFieldParamEditorScript _triggerArgsFieldParamEditorOriginal;
+
 
     [SerializeField] PlatformParams _params;
     [SerializeField] BasePlatformScript _platform;
@@ -23,6 +25,8 @@ public class PlatformEditorWidgetScript : MonoBehaviour
 
     List<FieldInfo> _paramsFields = new();
     List<ParamEditorScript> _paramsWidgets = new();
+
+    AngleFieldParamEditorScript _rotationFieldParamEditor;
 
     public bool IsMouseInSaveZone()
     {
@@ -38,6 +42,17 @@ public class PlatformEditorWidgetScript : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            _rotationFieldParamEditor.StartForceInput(Camera.main.WorldToScreenPoint(_platform.transform.position));
+        }
+        if (Input.GetKeyUp(KeyCode.R))
+        {
+            _rotationFieldParamEditor.StopForceInput();
+        }
+        if (Input.GetAxis("Delete") == 1f && _platform)
+            DestroyPlatform();
+
         Debug.Assert(_paramsFields.Count == _paramsWidgets.Count);
 
         for (int i = 0; i < _paramsFields.Count; i++)
@@ -77,9 +92,12 @@ public class PlatformEditorWidgetScript : MonoBehaviour
 
         if (platform)
         {
+            //gameObject.SetActive(true);
             SetupParams(_platform.platformParams);
             _platformNameText.text = platform.name;
         }
+        //else
+        //    gameObject.SetActive(false);
             
     }
 
@@ -98,12 +116,16 @@ public class PlatformEditorWidgetScript : MonoBehaviour
 
         var props = p.GetType().GetFields();
 
-        _paramsFields = props.ToList();
+        _paramsFields.Clear();// = props.ToList();
         _paramsWidgets.Clear();
 
         for (int i = 0; i < props.Length; i++)
         {
             var attrs = props[i].GetCustomAttributes(true);
+
+            if (attrs.Select(x => x as PlatformParams.HideAttribute).Where(x => x != null).Count() > 0)
+                continue;
+            
 
             var displayName = "~name";
 
@@ -113,6 +135,7 @@ public class PlatformEditorWidgetScript : MonoBehaviour
                     x => x != null
                         ).First().name;
 
+            ParamEditorScript spawnedPlatform = null;
 
 
             if (props[i].FieldType == typeof(System.Single))
@@ -128,32 +151,40 @@ public class PlatformEditorWidgetScript : MonoBehaviour
                 }
 
                 var floatWidget = Instantiate(_floatParamWidgetOriginal);
-                floatWidget.transform.SetParent(_paramsFieldsParent);
-
-                floatWidget.Init(this, props[i].Name);
-                floatWidget.displayName = displayName;
                 floatWidget.range = range;
 
-                _paramsWidgets.Add(floatWidget);   
+                spawnedPlatform = floatWidget;
             }
             else if(props[i].FieldType == typeof(Vector2))
             {
                 var vector2Widget = Instantiate(_vector2FieldParamWidgetOriginal);
-                vector2Widget.transform.SetParent(_paramsFieldsParent);
 
-                vector2Widget.Init(this, props[i].Name);
-                vector2Widget.displayName = displayName;
-
-                _paramsWidgets.Add(vector2Widget);
+                spawnedPlatform = vector2Widget;
             }
             else if(props[i].FieldType == typeof(Angle))
             {
                 var angleWidget = Instantiate(_angleFieldParamEditorOriginal);
-                angleWidget.transform.SetParent(_paramsFieldsParent);
 
-                angleWidget.Init(this, props[i].Name);
+                spawnedPlatform = angleWidget;
+                _rotationFieldParamEditor = angleWidget;
+            }
+            else if (props[i].FieldType == typeof(TriggerArgs))
+            {
+                var triggerWidget = Instantiate(_triggerArgsFieldParamEditorOriginal);
 
-                _paramsWidgets.Add(angleWidget);
+                spawnedPlatform = triggerWidget;
+            }
+
+            if (spawnedPlatform)
+            {
+                spawnedPlatform.transform.SetParent(_paramsFieldsParent);
+
+                spawnedPlatform.Init(this, props[i].Name);
+                spawnedPlatform.SetDisplayName(displayName); 
+                _paramsWidgets.Add(spawnedPlatform);
+
+
+                _paramsFields.Add(props[i]);
             }
         }
 

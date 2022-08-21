@@ -14,10 +14,15 @@ public class PlatformRotatorParams : PlatformParams
     [DisplayName("Present Angle")]
     [FloatRange(-90f, 90f)]
     public float presentAngle = -45;
+
+    public override string ToString()
+    {
+        return base.ToString() + $"abs: {absentAngle}; pre: {presentAngle}; ";
+    }
 }
 
 
-public class PlatformRotatorScript : BasePlatformScript
+public class PlatformRotatorScript : BasePlatformScript, ISignalConnectable
 {
     #region debug
 
@@ -53,9 +58,10 @@ public class PlatformRotatorScript : BasePlatformScript
     }
     #endregion
 
-    private void Awake()
+    public override void Created()
     {
-        platformParams = new PlatformRotatorParams();
+        platformParams = new PlatformRotatorParams(); 
+        base.Created();
     }
 
     public override void ApplyParams()

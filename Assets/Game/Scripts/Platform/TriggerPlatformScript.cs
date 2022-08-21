@@ -9,18 +9,27 @@ public class TriggerPlatformParams : PlatformParams
     [FloatRange(0f, 100f)]
     public float distance = 5;
 
-    [DisplayName("Direction")]
-    public Vector2 direction = Vector2.right;
+    //[DisplayName("Direction")]
+    //public Vector2 direction = Vector2.right;
+
+    [DisplayName("Args")]
+    public TriggerArgs args;
+
+    public override string ToString()
+    {
+        return base.ToString() + $"dist: {distance}; args: {args};";
+    }
 }
 
 
-public class TriggerPlatformScript : MovablePlatformScript
+public class TriggerPlatformScript : MovablePlatformScript, ISignalConnectable
 {
     [SerializeField] CubeTriggerScript _triggerScript;
     
-    private void Awake()
+    public override void Created()
     {
-        platformParams = new TriggerPlatformParams();
+        platformParams = new TriggerPlatformParams { args = new TriggerArgs { mode = TriggerMode.Switch } };
+        base.Created();
     }
 
     private void Start()
@@ -34,8 +43,9 @@ public class TriggerPlatformScript : MovablePlatformScript
 
         if (platformParams is TriggerPlatformParams p)
         {
-            _triggerScript.direction = p.direction;
+            //_triggerScript.direction = p.direction;
             _triggerScript.maxDistance = p.distance;
+            _triggerScript.triggerMode = p.args.mode;
         }
         else
         {

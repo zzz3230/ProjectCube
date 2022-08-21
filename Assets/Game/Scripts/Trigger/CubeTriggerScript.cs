@@ -23,12 +23,12 @@ public class CubeTriggerScript : ResettableMonoBehaviour
     //[SerializeField] private 
     public    Vector2 direction = Vector2.right;
 
-    //[SerializeField] List<Collider2D> ignoreColliders = new List<Collider2D>();
+    //[SerializeField] List<Collider2D> ignoreColliders = new List<Collider2D>();private
     [SerializeField] LayerMask ignoreTriggerLayerMask;
 
     private SignalTransmitterScript _connectedTransmitter;
 
-    [SerializeField] private TriggerMode triggerMode;
+    [SerializeField] public TriggerMode triggerMode;
     private void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
@@ -55,6 +55,8 @@ public class CubeTriggerScript : ResettableMonoBehaviour
     void Update()
     {
         var position = transform.position;
+
+        direction = transform.right;
         
         RaycastHit2D hit = Physics2D.Raycast(position, direction, maxDistance, ~ignoreTriggerLayerMask);
         

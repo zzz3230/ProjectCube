@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class MovablePlatformScript : BasePlatformScript
 {
+    public override void Created()
+    {
+        //print("setted pos " + root.transform.position);
+
+        platformParams.position = root.transform.position;
+        base.Created();
+    }
+
     [SerializeField] private GameObject root;
     public override void ApplyParams()
     {

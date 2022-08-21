@@ -1,3 +1,6 @@
+// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +13,10 @@ public class AngleFieldInputRotatorScript : MonoBehaviour, IPointerDownHandler, 
 
     //.transform
     bool _input;
+    
+    public bool forceInput;
+    public Vector2 forceInputAround;
+
     public void OnPointerDown(PointerEventData eventData)
     {
         _input = true;
@@ -30,10 +37,11 @@ public class AngleFieldInputRotatorScript : MonoBehaviour, IPointerDownHandler, 
 
     private void Update()
     {
-        if (_input)
+        if (_input || forceInput)
         {
-            float y1 = transform.position.x; 
-            float x1 = transform.position.y;
+
+            float y1 = forceInput ? forceInputAround.x : transform.position.x; 
+            float x1 = forceInput ? forceInputAround.y : transform.position.y;
 
             Vector3 mPos = Input.mousePosition;
 
@@ -44,7 +52,16 @@ public class AngleFieldInputRotatorScript : MonoBehaviour, IPointerDownHandler, 
 
             angle = -radAngle * Mathf.Rad2Deg + 90;
 
+            //Debug.Log("before: " + angle);else
+
+            if (angle > 265)
+                angle = 270;
+
             angle = angle - angle % 15;
+
+            
+
+            //Debug.Log("after: " + angle);
 
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.WithZ(angle));
 

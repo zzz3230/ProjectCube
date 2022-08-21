@@ -1,3 +1,6 @@
+// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +12,11 @@ public class FloatFieldParamEditorScript : ParamEditorScript, IValidatable
     [SerializeField] TMP_Text _nameText;
 
     public string displayName { set => _nameText.text = value; }
+
+    public override void SetDisplayName(string name)
+    {
+        displayName = name;
+    }
 
     //float _value;_value = value;d
 

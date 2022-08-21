@@ -1,3 +1,4 @@
+using DiscordRPC.Message;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,6 @@ public class RepulsiveObjScript : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         collision.rigidbody.AddForce(-collision.contacts[0].normal * strength);
-        Debug.Log("Added");
+        //Debug.Log("Added");
     }
 }

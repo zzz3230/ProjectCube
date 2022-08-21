@@ -5,6 +5,21 @@ using UnityEngine;
 [System.Serializable]
 public class PlatformParams
 {
+    public PlatformParams Dublicate()
+    {
+        var copy = (PlatformParams)this.MemberwiseClone();
+        copy.uuid = System.Guid.NewGuid().ToString();
+        return copy;
+    }
+
+    [Hide]
+    public string uuid;
+
+    public class HideAttribute : System.Attribute
+    {
+
+    }
+
     public class DisplayNameAttribute : System.Attribute
     {
         string _name;
@@ -26,11 +41,16 @@ public class PlatformParams
     }
 
     [DisplayName("Position")]
-    public Vector2 position;
+    public SerVector2 position;
 
     [DisplayName("Rotation")]
     //[FloatRange(-360f, 360f)]float
     public Angle rotation;
+
+    public override string ToString()
+    {
+        return $"pos: {position}; rot: {rotation.angle}; ";
+    }
 }
 
 public class LevelPlatformEditorScript : MonoBehaviour
@@ -40,6 +60,7 @@ public class LevelPlatformEditorScript : MonoBehaviour
 
     public void Move(Vector2 newPos)
     {
+        
         //_platformRoot.transform.position = newPos;
     }
 

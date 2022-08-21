@@ -14,7 +14,9 @@ public class SignalReceiverScript : MonoBehaviour
     }
 
     public event Action<SignalValue> onSignalChanged;
-    
+
+    public SignalTransmitterScript transmitter => _connectedTransmitter;
+
     public bool IsConnected(SignalTransmitterScript transmitter)
     {
         return transmitter == _connectedTransmitter;

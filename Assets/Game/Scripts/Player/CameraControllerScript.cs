@@ -74,7 +74,7 @@ public class CameraControllerScript : MonoBehaviour
         var ms = Input.mouseScrollDelta.y;
 
         _cameraSize += -ms * Time.deltaTime * _scrollSpeed;
-        _cameraSize = Mathf.Clamp(_cameraSize, 1, 15);
+        _cameraSize = Mathf.Clamp(_cameraSize, 1, 25);
         
         if(_cameraSize != _camera.orthographicSize)
         {

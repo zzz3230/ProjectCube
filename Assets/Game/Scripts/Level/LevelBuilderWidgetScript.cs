@@ -8,7 +8,10 @@ public class LevelBuilderWidgetScript : MonoBehaviour
 
     public void BuildByID(BuildingID id)
     {
-        levelBuilderScript.Build(id, Vector3.one);
+        levelBuilderScript.BuildInCenter(id
+            //Vector3.one,
+
+            );
     }
 
     public void Build_MoveHorizontalPlatform()

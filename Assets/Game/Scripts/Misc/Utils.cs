@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public static class VectorUtils
 {
@@ -11,10 +13,16 @@ public static class VectorUtils
     {
         return new Vector3(original.x, original.y, v);
     }
+
     public static Vector3 ToVec3(this Vector2 original, float z)
     {
         return new Vector3(original.x, original.y, z);
     }
+    public static Vector3 ToVec3(this SerVector2 original, float z)
+    {
+        return ToVec3((Vector2)original, z);
+    }
+
     public static Vector3 Round(this Vector3 original, int d)
     {
         return new Vector3(
@@ -64,5 +72,25 @@ public static class Utils
         var res = float.TryParse(str, out var v);
         value = v;
         return res;
+    }
+
+    public static void LoadScene(string name)
+    {
+        SceneManager.LoadScene(name);
+    }
+
+    public static T GetComponentOrInChildren<T>(this GameObject go) where T : Component
+    {
+        if(go.TryGetComponent<T>(out var comp))
+        {
+            return comp;
+        }
+        return go.GetComponentInChildren<T>();
+    }
+
+    public static string GetDataFolderPath(string name)
+    {
+        //, "/../"
+        return new DirectoryInfo(Application.dataPath).Parent.FullName + $"/{name}/";
     }
 }

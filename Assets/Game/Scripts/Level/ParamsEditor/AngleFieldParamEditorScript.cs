@@ -1,10 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class AngleFieldParamEditorScript : ParamEditorScript
 {
     [SerializeField] AngleFieldInputRotatorScript _angleInput;
+    [SerializeField] TMP_Text _nameText;
+
+    public override void SetDisplayName(string name)
+    {
+        _nameText.text = name;
+    }
+
+    public void StartForceInput(Vector2 aroud)
+    {
+        _angleInput.forceInputAround = aroud;
+        _angleInput.forceInput = true;
+    }
+    public void StopForceInput()
+    {
+        _angleInput.forceInput = false;
+    }
 
     public override object GetFinalValue()
     {

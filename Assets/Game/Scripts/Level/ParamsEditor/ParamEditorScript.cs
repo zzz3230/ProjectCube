@@ -6,6 +6,12 @@ public class ParamEditorScript : MonoBehaviour
 {
     string _fieldName;
     PlatformEditorWidgetScript _platformEditor;
+
+    public virtual void SetDisplayName(string name)
+    {
+
+    }
+
     //public object value;
 
 

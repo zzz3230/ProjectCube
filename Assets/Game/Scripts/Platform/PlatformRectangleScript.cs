@@ -12,13 +12,19 @@ public class PlatformRectangleParams : PlatformParams
     [DisplayName("Height")]
     [FloatRange(.1f, 10f)]
     public float height = 1;
+
+    public override string ToString()
+    {
+        return base.ToString() + $"wid: {width}; hei: {height}; ";
+    }
 }
 
 public class PlatformRectangleScript : MovablePlatformScript
 {
-    private void Awake()
+    public override void Created()
     {
         platformParams = new PlatformRectangleParams { height = transform.localScale.y, width = transform.localScale.x };
+        base.Created();
     }
 
     public override void ApplyParams()

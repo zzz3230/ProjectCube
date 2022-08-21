@@ -17,6 +17,11 @@ public class PlatformMoverParams : PlatformParams
     [DisplayName("Speed")]
     [FloatRange(.1f, 10f)]
     public float speed = 1;
+
+    public override string ToString()
+    {
+        return base.ToString() + $"abs: {absentPos}; pre: {presentPos}; speed: {speed}; ";
+    }
 }
 
 public enum PlatformMoveMode
@@ -24,7 +29,7 @@ public enum PlatformMoveMode
     Horizontal,
     Vertical
 }
-public class PlatformMoverScript : MovablePlatformScript
+public class PlatformMoverScript : MovablePlatformScript, ISignalConnectable
 {
     #region debug
     [Button]
@@ -62,9 +67,10 @@ public class PlatformMoverScript : MovablePlatformScript
     }
     #endregion
 
-    private void Awake()
+    public override void Created()
     {
-        platformParams = new PlatformMoverParams();
+        platformParams = new PlatformMoverParams(); 
+        base.Created();
     }
     
     /*public override void DestroyPlatform()

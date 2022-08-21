@@ -12,6 +12,11 @@ public class Vector2FieldParamEditorScript : ParamEditorScript, IValidatable
 
     public string displayName { set => _nameText.text = value; }
 
+    public override void SetDisplayName(string name)
+    {
+        displayName = name;
+    }
+
     Color _correctColor;
     Color _incorrectColor;
 
@@ -50,7 +55,14 @@ public class Vector2FieldParamEditorScript : ParamEditorScript, IValidatable
 
     public override void SetValue(object v)
     {
-        value = (Vector2)v;
+        //try
+        //{
+            value = (Vector2)v;
+        //}
+        //catch
+        //{
+        //    Debug.Log(v);
+        //}
     }
     public override object GetFinalValue()
     {
